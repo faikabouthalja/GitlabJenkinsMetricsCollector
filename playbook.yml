@@ -1,0 +1,41 @@
+--- # Docker installation and config
+- hosts: local
+  user: ansible
+  sudo: yes
+  connection: ssh
+  gather_facts: yes
+
+  tasks:
+    - name: Importation du projet Friends Coach
+      git: repo=http://<username>:<password>@217.117.155.70:8003/yassine.aouadi/Friend_Coach.git dest="/home/ansible/projetFriendscoach"
+
+    - name: Importation du projet AskPro
+      git: repo=http://<username>:<password>@217.117.155.70:8003/yassine.aouadi/AskPro.git dest=/home/ansible/projetAskpro
+
+    - name: Script pour collecte des commit par utilisateur pour friends coach
+      shell: /home/ansible/playbook/scriptFriendsCoach.sh
+
+
+    - name: Script pour collecte des commit pour utilisateurs Ask pro 
+      shell: /home/ansible/playbook/scriptAskpro.sh
+
+- hosts: jenkins
+  user: ansible
+  sudo: yes
+  connection: ssh
+  gather_facts: yes 
+  tasks:    
+
+    - name: Importer le fichier log de Jenkins 
+      fetch: src=/var/log/jenkins/jenkins.log dest=/home/ansible/playbook/ flat=yes
+
+- hosts: local
+  user: ansible
+  sudo: yes
+  connection: ssh
+  gather_facts: yes
+
+  tasks:
+    - name: Executer script
+      shell: /home/ansible/playbook/scriptjenkins.sh
+
